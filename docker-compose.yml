@@ -1,0 +1,26 @@
+services:
+  learn:
+    build:
+      context: .
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple/}
+    image: learn-anything:local
+    container_name: learn-anything
+    # 只监听本机；局域网共享改成 "8765:8765"，并在 .env 里设 LA_ALLOW_SIGNUP=false
+    ports:
+      - "127.0.0.1:8765:8765"
+    volumes:
+      - learn-data:/data
+    # 非敏感配置放 .env（已 gitignore）
+    env_file:
+      - path: .env
+        required: false
+    # 凭据从启动 compose 的 shell 环境透传，不写进任何文件；shell 里没有时使用 .env 中的值
+    environment:
+      - ANTHROPIC_API_KEY
+      - ANTHROPIC_BASE_URL
+      - OPENAI_API_KEY
+    restart: unless-stopped
+
+volumes:
+  learn-data:
